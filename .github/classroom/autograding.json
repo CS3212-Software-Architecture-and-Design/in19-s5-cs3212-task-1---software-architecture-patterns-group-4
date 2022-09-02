@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Run unit tests",
+      "setup": "",
+      "run": "python -m unittest discover -s tests/unit",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 50
+    },
+    {
+      "name": "Run integration tests",
+      "setup": "",
+      "run": "python -m unittest discover -s tests/integration",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 50
+    }
+  ]
+}

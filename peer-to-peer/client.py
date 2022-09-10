@@ -28,16 +28,21 @@ class Client(DatagramProtocol):
             print("3 - Exit from the application")
             try:
                 option = int(input("Enter your option: "))
-                if (option not in (1, 2,3)):
+                if (option not in (1, 2, 3)):
                     print("Invalid input")
                 elif option == 1:
                     if len(self.clientList)==0:
                         print("No peers")
                     else:
-                        print("Select a host from\n",' '.join(self.clientList))
+                        print("Select a host from")
+                        print(*self.clientList,sep="\n")
                         self.addressToSendMsg = input("host:"), int(input("port:"))
-                        self.send_message()
-
+                        if(self.addressToSendMsg not in self.clientList):
+                            print("This client is not in the client list\n")
+                        else:   
+                            self.send_message()
+                        
+                    
                 elif option == 2:
                     self.addressToSendMsg = input("host:"), int(input("port:"))
                     self.send_message()

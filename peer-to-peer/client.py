@@ -1,6 +1,7 @@
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from random import randint
+import time
 
 class Client(DatagramProtocol):
 
@@ -39,10 +40,11 @@ class Client(DatagramProtocol):
         self.addNewPeer(senderAddress)
         self.addressLastReceived = senderAddress
         return
-        
-    def mainMenu(self):
+    
+    #Messaging menu   
+    def mainMenu(self):       
         while True:
-            
+            time.sleep(1)
             print("P2P Messanger - Menu")
             
             print("1 - Message Last Sent Address")
@@ -55,8 +57,8 @@ class Client(DatagramProtocol):
             
             try:
                 selection = int(input("Select an option  :  "))
-                   
-                if (selection == 1):    self.msgLastSentAddr()
+                
+                if (selection == 1):   self.msgLastSentAddr()
                 
                 elif (selection == 2):  self.msgLastRecAddr()
                 
@@ -70,37 +72,55 @@ class Client(DatagramProtocol):
         
             except:
                 print("Invalid input")
+                
+    #Send a message to the last sent address
     def msgLastSentAddr(self):
-        self.addressToSendMsg = self.addressLastSent
-        self.send_message()
-        
+        if(self.addressLastSent==None):
+            print("No last sent addresses")
+        else:
+            self.addressToSendMsg = self.addressLastSent
+            self.send_message()
+            
+    #Send a message to the last received address     
     def msgLastRecAddr(self):
-        self.addressToSendMsg = self.addressLastReceived
-        self.send_message()
-        
+        if(self.addressLastReceived ==None):
+            print("No last received addresses")
+        else:
+            self.addressToSendMsg = self.addressLastReceived
+            self.send_message()
+    
+    #Send a message to a saved peer    
     def msgSavedPeer(self):
-        self.addressToSendMsg = self.selectPeer()
-        self.send_message()
-        
+        if(len(self.peers)==0):
+            print("No saved peers")
+        else:
+            self.addressToSendMsg = self.selectPeer()
+            if(self.addressToSendMsg!=None):
+                self.send_message()
+    
+    #Send a message to a new peer    
     def msgNewPeer(self):
         self.addressToSendMsg = self.getNewPeer()
         if(self.addressToSendMsg != None):
             self.addNewPeer(self.addressToSendMsg)
             self.send_message()
-        
+    
+    #Exit from the application   
     def exitApp(self):
         reactor.stop()
         exit()
     
+    #Select a saved peer 
     def selectPeer(self):
         print(self.peers)
         try:
             selected = int(input("Select a peer: "))
-            #check peer
             return self.peers[selected]
         except:
-            print("Select valid peer")
-            
+            print("Select a valid peer")
+            return None
+    
+    #Get the address of a new peer        
     def getNewPeer(self):
         host = input("host:")
         validhost = host.split('.')
@@ -119,7 +139,7 @@ class Client(DatagramProtocol):
                 return None
         try:    
             port = int(input("port:"))
-            if (len(port)>4 and len(port)==0):
+            if (port>9999 or port==0):
                 print("Invalid port")
                 return None
         except:
@@ -129,14 +149,20 @@ class Client(DatagramProtocol):
         peer = host,port
         return peer
     
+    #Add a new peer to the saved peer list
     def addNewPeer(self, peer):
         peerSize = len(self.peers)
-        #if not in the list
-        self.peers[peerSize] = peer
-        return
+        if(self.isPeerSaved(peer)==False):
+            self.peers[peerSize] = peer
+            return
     
-        
-   
+    #Check whether the peer has already saved in the peer list
+    def isPeerSaved(self,peer):
+        if(peer in self.peers.values()):
+            return True
+        else:
+            return False   
+
 if __name__ == '__main__':
     port = randint(1000, 5000)
     client = Client(port)

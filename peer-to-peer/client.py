@@ -3,7 +3,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from random import randint
 import time
-import sys
+
 
 class Client(DatagramProtocol):
 

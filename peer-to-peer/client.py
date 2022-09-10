@@ -53,21 +53,23 @@ class Client(DatagramProtocol):
             print("0 - Exit P2P Messanger")
             print("\n\n\n")
             
-            selection = int(input("Select an option  :  "))
-                    
-            if (selection == 1):    self.msgLastSentAddr()
+            try:
+                selection = int(input("Select an option  :  "))
+                   
+                if (selection == 1):    self.msgLastSentAddr()
                 
-            elif (selection == 2):  self.msgLastRecAddr()
+                elif (selection == 2):  self.msgLastRecAddr()
                 
-            elif (selection == 3):  self.msgSavedPeer()
+                elif (selection == 3):  self.msgSavedPeer()
                 
-            elif (selection == 4):  self.msgNewPeer()
+                elif (selection == 4):  self.msgNewPeer()
                 
-            elif (selection == 0):  self.exitApp()
+                elif (selection == 0):  self.exitApp()
                 
-            else:   print("invalid input")
+                else:   print("Select a valid option")
         
-            
+            except:
+                print("Invalid input")
     def msgLastSentAddr(self):
         self.addressToSendMsg = self.addressLastSent
         self.send_message()
@@ -82,8 +84,9 @@ class Client(DatagramProtocol):
         
     def msgNewPeer(self):
         self.addressToSendMsg = self.getNewPeer()
-        self.addNewPeer(self.addressToSendMsg)
-        self.send_message()
+        if(self.addressToSendMsg != None):
+            self.addNewPeer(self.addressToSendMsg)
+            self.send_message()
         
     def exitApp(self):
         reactor.stop()
@@ -91,11 +94,39 @@ class Client(DatagramProtocol):
     
     def selectPeer(self):
         print(self.peers)
-        selected = int(input("Select a peer: "))
-        return self.peers[selected]
-    
+        try:
+            selected = int(input("Select a peer: "))
+            #check peer
+            return self.peers[selected]
+        except:
+            print("Select valid peer")
+            
     def getNewPeer(self):
-        peer = input("host:"), int(input("port:"))
+        host = input("host:")
+        validhost = host.split('.')
+        if(len(validhost)!=4):
+            print("Invalid host address")
+            return None
+        for i in validhost:
+            try:
+                if (int(i)<255 and int(i)>=0):
+                    continue
+                else:
+                    print("Invalid host")
+                    return None
+            except:
+                print("Invalid host")
+                return None
+        try:    
+            port = int(input("port:"))
+            if (len(port)>4 and len(port)==0):
+                print("Invalid port")
+                return None
+        except:
+            print("Invalid port")
+            return None
+        
+        peer = host,port
         return peer
     
     def addNewPeer(self, peer):

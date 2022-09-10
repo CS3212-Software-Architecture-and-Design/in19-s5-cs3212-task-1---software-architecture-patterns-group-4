@@ -2,6 +2,7 @@ from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from random import randint
 import time
+import sys
 
 class Client(DatagramProtocol):
 
@@ -22,20 +23,24 @@ class Client(DatagramProtocol):
             time.sleep(0.5)
             print("1 - message to peer clients")
             print("2 - message to new client")
+            print("3 - Exit from the application")
             try:
                 option = int(input("Enter your option: "))
-                if (option not in (1, 2)):
+                if (option not in (1, 2, 3)):
                     print("Invalid input")
                 elif option == 1:
-                    if not self.clientList:
+                    if len(self.clientList)==0:
                         print("No peers")
                     else:
-                        print("Select a host from\n",
-                              ' '.join(self.clientList))
-                        self.addressToSendMsg = input(
-                            "host:"), int(input("port:"))
-                        self.send_message()
-
+                        print("Select a host from")
+                        print(*self.clientList,sep="\n")
+                        self.addressToSendMsg = input("host:"), int(input("port:"))
+                        if(self.addressToSendMsg not in self.clientList):
+                            print("This client is not in the client list\n")
+                        else:   
+                            self.send_message()
+                        
+                    
                 elif option == 2:
                     self.addressToSendMsg = input("host:"), int(input("port:"))
                     self.send_message()
@@ -43,9 +48,13 @@ class Client(DatagramProtocol):
                         self.clientList.append(self.addressToSendMsg)
                         time.sleep(0.5)
 
-            except :
+                elif option==3:
+                    print('exiting')
+                    break                   
+            except:
                 print("Exception")
                 time.sleep(1)
+        reactor.stop()
 
     def datagramReceived(self, datagram, senderAddress):
         datagram = datagram.decode('utf-8')

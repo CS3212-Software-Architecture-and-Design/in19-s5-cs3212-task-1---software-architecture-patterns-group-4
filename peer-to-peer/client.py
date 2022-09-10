@@ -1,9 +1,7 @@
-from nis import match
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 from random import randint
 import time
-
 
 class Client(DatagramProtocol):
 
@@ -19,7 +17,6 @@ class Client(DatagramProtocol):
         self.transport.write("ready".encode('utf_8'), self.id)
 
     def messageClients(self):
-        print("Select option 1 or 2 to send message")
         while True:
             print("Select option 1 or 2 to send message")
             time.sleep(0.5)
@@ -46,7 +43,7 @@ class Client(DatagramProtocol):
                         self.clientList.append(self.addressToSendMsg)
                         time.sleep(0.5)
 
-            except:
+            except :
                 print("Exception")
                 time.sleep(1)
 
